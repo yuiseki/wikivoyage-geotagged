@@ -69,10 +69,18 @@ def unescape(raw):
 
 
 def unquote(raw):
-    """A dump value: a bare NULL, or a quoted string."""
+    """A dump value: a bare NULL, or a quoted string.
+
+    One quote comes off each end, not every quote at each end. A value ending
+    in an escaped quote ends in backslash, quote, quote, and strip() cannot
+    tell the delimiter from the escaped character: it took both and left the
+    backslash behind.
+    """
     if raw == b"NULL":
         return None
-    return unescape(raw.strip(b"'")).decode("utf-8", "ignore") or None
+    if len(raw) >= 2 and raw[:1] == b"'" and raw[-1:] == b"'":
+        raw = raw[1:-1]
+    return unescape(raw).decode("utf-8", "ignore") or None
 
 
 def read_geo(path):

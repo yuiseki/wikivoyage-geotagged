@@ -88,3 +88,14 @@ def test_unquote_undoes_escapes_too():
     assert geo_pages.unquote(rb"'Coeur d\'Alene'") == "Coeur d'Alene"
     assert geo_pages.unquote(rb"'a\\b'") == "a\\b"
     assert geo_pages.unquote(b"NULL") is None
+
+
+def test_only_the_outer_quotes_come_off():
+    """strip() takes every quote at the ends, not the one that delimits.
+
+    Wikivoyage cannot show this: every name in its geo_tags is null. Wikipedia
+    had 225 values of the form USS \'\'S-37\'\ left after the first fix.
+    """
+    assert geo_pages.unquote(rb"'USS \'\'S-37\'\''") == "USS ''S-37''"
+    assert geo_pages.unquote(rb"''") is None
+    assert geo_pages.unquote(rb"'Paris'") == "Paris"
