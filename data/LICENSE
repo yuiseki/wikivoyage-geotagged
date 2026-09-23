@@ -1,0 +1,18 @@
+The text in this dataset comes from the English Wikipedia and carries
+Wikipedia's licence.
+
+  Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+Some older revisions are additionally available under the GNU Free
+Documentation License. See:
+
+  https://en.wikipedia.org/wiki/Wikipedia:Copyrights
+
+Attribution and share-alike both apply. The authors of any article are listed
+under its history tab; the `url` column locates that history.
+
+The coordinates come from Wikipedia's GeoData extension and the Wikidata ids
+from Wikidata, which is CC0. Neither changes the licence of the text.
+
+The code that produced the dataset is licensed separately, under Apache-2.0.

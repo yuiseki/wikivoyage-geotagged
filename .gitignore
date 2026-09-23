@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.env
+
+# The dumps and everything derived from them. enwiki-pages-articles.xml.bz2
+# alone is 25.7 GB, the link graph is 2.1 GB, and all of it is reproducible
+# from the dumps by the code here.
+*.sql.gz
+*.xml.bz2
+*.jsonl
+*.tsv
+*.parquet

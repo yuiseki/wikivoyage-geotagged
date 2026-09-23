@@ -1,0 +1,88 @@
+# Where this dataset came from and what was done to it. Written for a person
+# deciding whether to trust it, and for a machine checking it is still current.
+
+dataset:
+  name: wikivoyage-geotagged
+  built: 2026-09-23
+  articles: 29505
+  characters: 240008558
+  languages: [en]
+
+licence:
+  text: CC BY-SA 4.0
+  basis: >
+    The text is English Wikivoyage and carries Wikivoyage's licence, confirmed
+    against the wiki's own rightsinfo rather than assumed from Wikipedia's.
+    Attribution and share-alike both apply; the url column locates each
+    article's history, which is where its authors are listed.
+  reference: https://en.wikivoyage.org/w/api.php?action=query&meta=siteinfo&siprop=rightsinfo
+  coordinates: >
+    From MediaWiki's GeoData extension, published in the same dumps.
+  wikidata_ids: CC0, from Wikidata
+  code: Apache-2.0
+
+sources:
+  - name: geo_tags
+    file: enwikivoyage-20260901-geo_tags.sql.gz
+    bytes: 474945
+    note: >
+      The GeoData extension's table of coordinates per page. 29,859 pages
+      carry one. Wikivoyage writes only latitude, longitude, dimension and
+      globe into it; type, country, region and name are empty on every row.
+  - name: page
+    file: enwikivoyage-20260901-page.sql.gz
+    bytes: 5522585
+    note: >
+      geo_tags holds page ids only; titles and namespaces come from here.
+      34,543 pages are articles and not redirects.
+  - name: page_props
+    file: enwikivoyage-20260901-page_props.sql.gz
+    bytes: 1644455
+    note: wikibase_item gives the Wikidata id for 99.6% of the articles.
+  - name: pages-articles
+    file: enwikivoyage-20260901-pages-articles.xml.bz2
+    bytes: 130838743
+    note: the article text.
+
+processing:
+  - step: selecting the geographic articles
+    script: src/geo_pages.py
+    results:
+      pages_with_a_coordinate: 29859
+      articles_not_redirects: 29505
+    note: >
+      Namespace 0 and not a redirect. Every column of geo_tags is kept and
+      every tag on a page, although on this wiki every page has exactly one.
+
+  - step: attaching Wikidata ids
+    script: src/link_qids.py
+    results:
+      with_a_wikidata_item: 29399
+      in_wikidata_gazetteer: 28530
+
+  - step: extracting the text
+    script: src/extract_text.py
+    note: >
+      The same code as wikipedia-geotagged, with --base-url pointing at
+      Wikivoyage. The wikitext cleaner unwraps templates and tables rather
+      than stripping them, which matters more here than on Wikipedia: a
+      listing template is where a Wikivoyage article keeps its names.
+
+  - step: publication
+    script: src/publish.py
+    output: articles.parquet
+
+known_limitations:
+  - >
+    gt_type, gt_country, gt_region and gt_name are null on all 29,505
+    articles, and gt_globe is earth on all of them. The columns are kept for
+    the same shape as wikipedia-geotagged, not because they carry anything.
+  - >
+    3.3% of the articles have no entry in wikidata-gazetteer. Wikivoyage gives
+    coordinates to itineraries, travel topics and phrasebooks as well as to
+    destinations.
+  - >
+    Less dense in place names than wikipedia-geotagged, 3.85 per 1,000
+    characters against 5.46, but more varied per article: 48,103 distinct
+    names in 20,000 articles against 34,642.
+  - English only. geo_tags exists for every language edition.
