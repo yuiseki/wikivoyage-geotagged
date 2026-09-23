@@ -16,8 +16,10 @@ tags:
 - gazetteer
 pretty_name: Geotagged Wikivoyage
 configs:
-- config_name: default
-  data_files: articles.parquet
+- config_name: 20260901.en
+  data_files:
+  - split: train
+    path: 20260901.en/train-*
 ---
 
 # Geotagged Wikivoyage
@@ -25,6 +27,12 @@ configs:
 Every English Wikivoyage article that carries coordinates, with its text.
 
 29,505 articles, 240,008,558 characters. Built from the `20260901` dumps.
+
+    from datasets import load_dataset
+    ds = load_dataset("yuiseki/wikivoyage-geotagged", "20260901.en")
+
+The subset is named `{dump}.{lang}`, as in `wikimedia/wikipedia`. A later dump
+or another language is added beside this one rather than replacing it.
 
 The columns are the same as
 [`yuiseki/wikipedia-geotagged`](https://huggingface.co/datasets/yuiseki/wikipedia-geotagged),

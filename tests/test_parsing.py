@@ -40,22 +40,6 @@ def test_page_tuple_carries_namespace_and_redirect_flag():
     assert m.group(4) == b"0"
 
 
-def test_the_card_names_the_file_that_is_uploaded():
-    """data_files in the card has to be the path publish.py writes to.
-
-    They are set in different files, so nothing but a test connects them. Get
-    it wrong and the dataset viewer finds no data while every upload succeeds.
-    """
-    import re
-    import publish
-
-    base = os.path.join(os.path.dirname(__file__), "..")
-    card = open(os.path.join(base, "data/README.md"), encoding="utf-8").read()
-    declared = re.search(r"^\s*data_files:\s*(\S+)\s*$", card, re.M)
-    assert declared, "the card declares no data_files"
-    assert declared.group(1) == publish.PATH_IN_REPO
-
-
 def test_templates_and_tables_are_unwrapped_not_removed():
     """The cleaner keeps what is inside braces and pipes.
 
@@ -99,3 +83,33 @@ def test_only_the_outer_quotes_come_off():
     assert geo_pages.unquote(rb"'USS \'\'S-37\'\''") == "USS ''S-37''"
     assert geo_pages.unquote(rb"''") is None
     assert geo_pages.unquote(rb"'Paris'") == "Paris"
+
+
+def test_the_card_declares_every_subset_that_exists():
+    """The configs in the card have to be the directories publish.py writes.
+
+    They are set in different files, so nothing but a test connects them. Get
+    it wrong and the dataset viewer finds no data while every upload succeeds.
+    Following wikimedia/wikipedia, a subset is named {dump}.{lang} and its
+    files are {dump}.{lang}/train-*.
+    """
+    import re
+    import publish
+
+    base = os.path.join(os.path.dirname(__file__), "..")
+    card = open(os.path.join(base, "data/README.md"), encoding="utf-8").read()
+    names = re.findall(r"^- config_name: (\S+)$", card, re.M)
+    paths = re.findall(r"^    path: (\S+)$", card, re.M)
+    assert names, "the card declares no configs"
+    assert len(names) == len(paths)
+    for name, path in zip(names, paths):
+        assert re.fullmatch(r"\d{8}\.[a-z-]+", name), name
+        assert path == publish.subset_glob(name), (name, path)
+
+
+def test_shards_are_named_the_way_the_hub_expects():
+    import publish
+
+    assert publish.shard_name(0, 1) == "train-00000-of-00001.parquet"
+    assert publish.shard_name(3, 41) == "train-00003-of-00041.parquet"
+    assert publish.subset_glob("20260901.en") == "20260901.en/train-*"

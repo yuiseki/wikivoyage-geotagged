@@ -6,6 +6,12 @@ Published as
 [`yuiseki/wikivoyage-geotagged`](https://huggingface.co/datasets/yuiseki/wikivoyage-geotagged):
 29,505 articles, 240 million characters. Its card is `data/README.md`.
 
+    from datasets import load_dataset
+    ds = load_dataset("yuiseki/wikivoyage-geotagged", "20260901.en")
+
+Subsets are named `{dump}.{lang}` and hold `train-NNNNN-of-NNNNN.parquet`, the
+layout `wikimedia/wikipedia` uses.
+
 This is the sibling of
 [wikipedia-geotagged](https://github.com/yuiseki/wikipedia-geotagged) and runs
 the same code against a different wiki. 85.4% of Wikivoyage's 34,543 articles
@@ -25,6 +31,7 @@ Three steps, from the `20260901` dumps:
     python3 src/geo_pages.py    --geo-tags voyage-geo_tags.sql.gz --page voyage-page.sql.gz --out geo_pages.jsonl
     python3 src/link_qids.py    --geo-pages geo_pages.jsonl --page-props voyage-page_props.sql.gz --out geo_pages_qid.jsonl
     python3 src/extract_text.py --dump voyage-pages-articles.xml.bz2 --geo-pages geo_pages_qid.jsonl --out corpus.jsonl.gz
+    python3 src/publish.py      --jsonl corpus.jsonl.gz --dump 20260901 --lang en
 
 `extract_text.py` takes `--base-url`, which is the only thing in the pipeline
 that knows which wiki it is reading.
