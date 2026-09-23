@@ -9,7 +9,7 @@ Published as
 This is the sibling of
 [wikipedia-geotagged](https://github.com/yuiseki/wikipedia-geotagged) and runs
 the same code against a different wiki. 85.4% of Wikivoyage's 34,543 articles
-carry a coordinate, where English Wikipedia's share is a fifth, and its
+carry a coordinate, where English Wikipedia's share is 19.0%, and its
 articles are three times longer.
 
 ## What is here

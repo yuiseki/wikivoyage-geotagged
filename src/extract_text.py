@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Pull the text of the geographic articles out of the article dump.
 
-The dump is 25.7 GB compressed and about 100 GB expanded, so nothing is held:
-lbzip2 streams it in, iterparse walks it an element at a time, each page is
-cleared as soon as it is read, and the output is written gzipped as it goes.
-The only thing kept in memory is which page ids are wanted, about 165 MB.
+Nothing is held: lbzip2 streams the dump in, iterparse walks it an element at
+a time, each page is cleared as soon as it is read, and the output is written
+gzipped as it goes. Wikivoyage's dump is 131 MB and would fit in memory, but
+this is the same file as wikipedia-geotagged, where the dump is 25.7 GB
+compressed and about 100 GB expanded.
 
 Only articles named in geo_pages_qid.jsonl are kept, so the Wikidata id and the
 coordinates travel with the text.

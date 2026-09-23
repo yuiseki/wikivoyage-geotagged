@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Push the corpus and the files that explain it to the Hub.
 
-Streamed into Parquet rather than held as a datasets.Dataset: 3.8 billion
-characters across 1.37 million articles costs several times its own size as
-Python objects, and Parquet is the published form anyway.
+Streamed into Parquet rather than held as a datasets.Dataset: 240 million
+characters across 29,505 articles costs several times its own size as Python
+objects, and Parquet is the published form anyway. The same code as
+wikipedia-geotagged, which needs the streaming far more.
 
 Data first, card last. Nothing here rewrites the card, so this ordering means
 the repository is never in a state where the card describes files that have not

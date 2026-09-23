@@ -37,7 +37,8 @@ Code: https://github.com/yuiseki/wikivoyage-geotagged
 ## Why a travel guide is worth having next to an encyclopedia
 
 Wikivoyage is small and almost entirely about places. 29,505 of its 34,543
-articles carry a coordinate, 85.4%, where English Wikipedia's share is a fifth.
+articles carry a coordinate, 85.4%, where English Wikipedia's share is 19.0%
+of 7,235,024.
 
 It is also written differently. An encyclopedia article states what a place is;
 a travel guide tells you how to get there, what the neighbouring town is called,
@@ -49,7 +50,7 @@ Wikipedia's 2,797, and much of that length is the names of smaller things.
 | articles | 29,505 | 1,374,056 |
 | characters | 240 M | 3.84 B |
 | mean article | 8,134 | 2,797 |
-| share of the wiki that is geotagged | 85.4% | 20.4% |
+| share of the wiki that is geotagged | 85.4% | 19.0% |
 | with a Wikidata id | 99.6% | 99.9% |
 | also in `wikidata-gazetteer` | 96.7% | 93.8% |
 
