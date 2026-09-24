@@ -5,7 +5,7 @@ dataset:
   name: wikivoyage-geotagged
   built: 2026-09-23
   articles: 29505
-  characters: 240008558
+  characters: 234427662
   languages: [en]
 
 licence:
@@ -86,3 +86,16 @@ known_limitations:
     characters against 5.46, but more varied per article: 48,103 distinct
     names in 20,000 articles against 34,642.
   - English only. geo_tags exists for every language edition.
+
+corrections:
+  - date: 2026-09-23
+    what: >
+      The wikitext cleaner left image markup in the text. A file link has three
+      pipes and the link pattern allowed one, so [[File:X.jpg|thumb|220px|A
+      caption]] survived whole. Seven defects were fixed together; see the
+      wikipedia-geotagged history for each.
+    effect: >
+      234,427,662 characters where the first publication had 240,008,558. The
+      difference is markup, not text: Wikivoyage carries few references, so it
+      did not suffer the other half of the bug, where a self-closing <ref /> ate
+      the article up to the next reference.

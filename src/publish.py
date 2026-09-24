@@ -6,7 +6,7 @@ language, named {dump}.{lang}, holding train-NNNNN-of-NNNNN.parquet. Code
 written to read that dataset reads this one by changing the repository name,
 and a second language or a later dump is added rather than swapped in.
 
-Streamed into Parquet rather than held as a datasets.Dataset: 240 million
+Streamed into Parquet rather than held as a datasets.Dataset: 234 million
 characters across 29,505 articles costs several times its own size as Python
 objects, and Parquet is the published form anyway. The same code as
 wikipedia-geotagged, which needs the streaming far more.
@@ -39,6 +39,20 @@ def shard_name(index, total):
 def subset_glob(subset):
     """What the card's data_files path has to say for this subset."""
     return f"{subset}/train-*"
+
+
+def stale_shards(subset, published, uploading):
+    """Files in this subset that the upload does not replace.
+
+    The Hub globs {subset}/train-*, so a subset that grows from four shards to
+    five leaves train-00000-of-00004 sitting beside train-00000-of-00005 and
+    every row is read twice. The count is part of the name, so a rebuild that
+    changes it replaces nothing.
+    """
+    keep = set(uploading)
+    prefix = subset + "/"
+    return [p for p in published
+            if p.startswith(prefix) and p[len(prefix):] not in keep]
 
 
 def schema():
@@ -168,9 +182,17 @@ def main():
         print("dry run. pass --push to upload")
         return 0
 
-    from huggingface_hub import HfApi
+    from huggingface_hub import HfApi, CommitOperationDelete
     api = HfApi()
     api.create_repo(a.repo, repo_type="dataset", exist_ok=True)
+
+    # Before anything lands, work out what this upload will orphan. Deleting
+    # after the new shards are up keeps the subset readable throughout: a
+    # moment of duplicated rows is recoverable, a moment of missing ones is
+    # what a reader downloads.
+    published = api.list_repo_files(a.repo, repo_type="dataset")
+    orphans = stale_shards(subset, published, [os.path.basename(p) for p in shards])
+
     for i, path in enumerate(shards, 1):
         name = os.path.basename(path)
         print(f"uploading {subset}/{name}  ({i}/{len(shards)}) ...", flush=True)
@@ -181,6 +203,14 @@ def main():
                         repo_id=a.repo, repo_type="dataset")
     api.upload_file(path_or_fileobj=a.card, path_in_repo="README.md",
                     repo_id=a.repo, repo_type="dataset")
+    if orphans:
+        print(f"removing {len(orphans)} shard(s) the rebuild replaced:")
+        for p in orphans:
+            print(f"  {p}")
+        api.create_commit(
+            repo_id=a.repo, repo_type="dataset",
+            operations=[CommitOperationDelete(path_in_repo=p) for p in orphans],
+            commit_message=f"Remove the shards {subset} no longer uses")
     print(f"pushed to https://huggingface.co/datasets/{a.repo}")
     return 0
 

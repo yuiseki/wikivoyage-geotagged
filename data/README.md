@@ -26,7 +26,7 @@ configs:
 
 Every English Wikivoyage article that carries coordinates, with its text.
 
-29,505 articles, 240,008,558 characters. Built from the `20260901` dumps.
+29,505 articles, 234,427,662 characters. Built from the `20260901` dumps.
 
     from datasets import load_dataset
     ds = load_dataset("yuiseki/wikivoyage-geotagged", "20260901.en")
@@ -50,14 +50,14 @@ of 7,235,024.
 
 It is also written differently. An encyclopedia article states what a place is;
 a travel guide tells you how to get there, what the neighbouring town is called,
-and which street the market is on. Its articles average 8,134 characters against
-Wikipedia's 2,797, and much of that length is the names of smaller things.
+and which street the market is on. Its articles average 7,945 characters against
+Wikipedia's 3,152, and much of that length is the names of smaller things.
 
 | | wikivoyage-geotagged | wikipedia-geotagged |
 |---|---|---|
 | articles | 29,505 | 1,374,056 |
-| characters | 240 M | 3.84 B |
-| mean article | 8,134 | 2,797 |
+| characters | 234 M | 4.33 B |
+| mean article | 7,945 | 3,152 |
 | share of the wiki that is geotagged | 85.4% | 19.0% |
 | with a Wikidata id | 99.6% | 99.9% |
 | also in `wikidata-gazetteer` | 96.7% | 93.8% |

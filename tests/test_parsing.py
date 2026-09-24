@@ -113,3 +113,36 @@ def test_shards_are_named_the_way_the_hub_expects():
     assert publish.shard_name(0, 1) == "train-00000-of-00001.parquet"
     assert publish.shard_name(3, 41) == "train-00003-of-00041.parquet"
     assert publish.subset_glob("20260901.en") == "20260901.en/train-*"
+
+
+def test_stale_shards_are_named_for_deletion():
+    """A subset that shrinks or grows leaves the previous shard set behind.
+
+    The Hub globs {subset}/train-*, so train-00000-of-00004 and
+    train-00000-of-00005 are both read and every row appears twice. This
+    happened on the first English republish and had to be undone by hand.
+    """
+    import publish
+
+    published = [
+        "20260901.en/train-00000-of-00004.parquet",
+        "20260901.en/train-00001-of-00004.parquet",
+        "20260901.ja/train-00000-of-00002.parquet",
+        "README.md",
+    ]
+    uploading = ["train-00000-of-00005.parquet", "train-00001-of-00005.parquet",
+                 "train-00002-of-00005.parquet"]
+    assert publish.stale_shards("20260901.en", published, uploading) == [
+        "20260901.en/train-00000-of-00004.parquet",
+        "20260901.en/train-00001-of-00004.parquet",
+    ]
+
+
+def test_a_shard_that_is_being_replaced_is_not_deleted():
+    import publish
+
+    published = ["20260901.ja/train-00000-of-00002.parquet",
+                 "20260901.ja/train-00001-of-00002.parquet"]
+    uploading = ["train-00000-of-00002.parquet", "train-00001-of-00002.parquet"]
+    assert publish.stale_shards("20260901.ja", published, uploading) == []
+
